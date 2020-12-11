@@ -8,8 +8,6 @@
   ],
   "main": "src/index.js",
   "dependencies": {
-    "@testing-library/react": "11.2.2",
-    "jest": "26.6.3",
     "react": "17.0.0",
     "react-dom": "17.0.0",
     "react-scripts": "3.4.3"
