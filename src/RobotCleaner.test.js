@@ -17,11 +17,11 @@ describe("test algorithm", () => {
   const mockData = {
     commands: 5,
     initialPosition: { x: 0, y: 0 },
-    steps: [
+    commandList: [
       { commands: 2, direction: "N" },
       { commands: 2, direction: "E" },
       { commands: 10, direction: "S" },
-      { commands: 2, direction: "E" },
+      { commands: 20, direction: "W" },
       { commands: 2, direction: "S" }
     ]
   };
@@ -49,13 +49,13 @@ describe("test algorithm", () => {
   });
   test("Should Robot validate if can move in that direction", () => {
     const robotCleaner = new RobotCleaner(mockData);
-    robotCleaner.updateCurrentPosition({ x: 0, y: 99 });
+    robotCleaner.updateCurrentPosition({ x: 0, y: 999 });
     expect(robotCleaner.canRobotMove('N')).toBe(false);
-    robotCleaner.updateCurrentPosition({ x: 0, y: -99 });
+    robotCleaner.updateCurrentPosition({ x: 0, y: -999 });
     expect(robotCleaner.canRobotMove('S')).toBe(false);
-    robotCleaner.updateCurrentPosition({ x: -99, y: 0 });
+    robotCleaner.updateCurrentPosition({ x: -999, y: 0 });
     expect(robotCleaner.canRobotMove('W')).toBe(false);
-    robotCleaner.updateCurrentPosition({ x: 99, y: 0 });
+    robotCleaner.updateCurrentPosition({ x: 999, y: 0 });
     expect(robotCleaner.canRobotMove('E')).toBe(false);
   });
 
@@ -71,24 +71,23 @@ describe("test algorithm", () => {
     expect(stepsNumber).toBe(3);
   })
   test('should change direction if robot hits border', () => {
-    const robotCleaner = new RobotCleaner({ ...mockData, initialPosition: { x: 98, y: 98 } });
+    const robotCleaner = new RobotCleaner(mockData);
     expect(robotCleaner.changeDirection('N')).toBe('S');
     expect(robotCleaner.changeDirection('S')).toBe('N');
     expect(robotCleaner.changeDirection('W')).toBe('E');
     expect(robotCleaner.changeDirection('E')).toBe('W');
   })
-  
 
   test('should complete cleaning based on steps set when robot can not move', () => {
-    const robotCleaner = new RobotCleaner({...mockData, initialPosition: {x: 98, y: 98}});
+    const robotCleaner = new RobotCleaner({...mockData, initialPosition: {x: 998, y: 998}});
     robotCleaner.startCleaning();
     const stepsNumber = robotCleaner.getStepsNumber();
-    expect(stepsNumber).toBe(13);
+    expect(stepsNumber).toBe(33);
   })
   test('should complete cleaning based on steps set', () => {
     const robotCleaner = new RobotCleaner(mockData);
     robotCleaner.startCleaning();
     const stepsNumber = robotCleaner.getStepsNumber();
-    expect(stepsNumber).toBe(18);
+    expect(stepsNumber).toBe(35);
   })
 });

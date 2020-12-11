@@ -1,79 +1,47 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./styles.css";
+import RobotCleaner from "./RobotCleaner";
 
 export default function App() {
-  const canvasRef = useRef(null);
   const [coordinates, setcoordinates] = useState({ x: 0, y: 0 });
   const [numberCommands, setNumberCommands] = useState(0);
   const [commandList, setcommandList] = useState([]);
-  const [drawItem, setdrawItem] = useState(false);
-
-  useEffect(() => {
-    drawNewPosition();
-  }, [coordinates]);
-  const handleChangeCommandOrientation = (evt, key) => {
-    const orientation = evt.target.value;
-    let tempList = commandList;
-    tempList[key] = { ...commandList[key], orientation };
+  const [cleaned, setCleaned] = useState(null);
+ 
+  const handleChangeCommandDirection = (evt, key) => {
+    const direction = evt.target.value;
+    let tempList = [...commandList];
+    tempList[key] = { ...commandList[key], direction };
     setcommandList((prev) => tempList);
   };
 
   const handleChangeCommandSteps = (evt, key) => {
-    const steps = evt.target.value;
-    let tempList = commandList;
-    tempList[key] = { ...commandList[key], steps };
+    const commands = Number(evt.target.value);
+    let tempList = [...commandList];
+    tempList[key] = { ...commandList[key], commands };
     setcommandList(tempList);
   };
 
-  const drawNewPosition = () => {
-    handleClean();
-    if (canvasRef.current) {
-      const context = canvasRef?.current?.getContext("2d");
-      if (context) {
-        context.beginPath();
-        context.arc(coordinates.x, coordinates.x, 10, 0, 2 * Math.PI);
-        context.fill();
-      }
-    }
-  };
-  const doSetTimeout = (i) => {
-    let time = i * 2000;
-    setTimeout(function () {
-      setcoordinates((prev) => {
-        return { x: Number(prev.x) + 10, y: Number(prev.x) + 10 };
-      });
-    }, time);
-  };
-
   const handleStart = () => {
-    if (canvasRef.current) {
-      const context = canvasRef?.current?.getContext("2d");
-      if (context) {
-        context.beginPath();
-
-        context.arc(coordinates.x, coordinates.y, 10, 0, 2 * Math.PI);
-        context.fill();
-
-        for (let i = 1; i <= Number(numberCommands); ++i) doSetTimeout(i);
-
-        clearTimeout();
-      }
-    }
+    const robotCleaner = new RobotCleaner({ numberCommands, initialPosition: coordinates, commandList });
+    robotCleaner.startCleaning();
+    const cleaned = robotCleaner.getStepsNumber();
+    setCleaned(cleaned);
   };
 
   const handleClean = () => {
-    if (canvasRef.current) {
-      const context = canvasRef?.current?.getContext("2d");
-      context.clearRect(0, 0, 500, 500);
-    }
+    setNumberCommands(0);
+    setcommandList([]);
+    setCleaned(null);
+    setcoordinates({ x: 0, y: 0 });
   };
 
   const handleCommands = () => {
     let comands = [];
     for (let index = 0; index < numberCommands; index++) {
       comands.push({
-        steps: 0,
-        orientation: "N"
+        commands: 0,
+        direction: "N"
       });
     }
     setcommandList([...comands]);
@@ -87,7 +55,6 @@ export default function App() {
     handleCommands();
   }, [numberCommands]);
 
-  console.log(commandList);
   return (
     <div className="App">
       <h1>Robot App</h1>
@@ -102,7 +69,6 @@ export default function App() {
       <div>
         <h2>Commands</h2>
         {commandList.map((item, key) => {
-          console.log("ite", item);
           return (
             <div key={key}>
               <label>Steps</label>
@@ -111,11 +77,11 @@ export default function App() {
                 value={item.steps}
                 onChange={(evt) => handleChangeCommandSteps(evt, key)}
               />
-              <label>Orientation</label>
+              <label>Direction</label>
               <select
                 type={"number"}
-                value={item.orientation}
-                onChange={(evt) => handleChangeCommandOrientation(evt, key)}
+                value={item.direction}
+                onChange={(evt) => handleChangeCommandDirection(evt, key)}
               >
                 <option value={"N"}>{"N"}</option>
                 <option value={"S"}>{"S"}</option>
@@ -147,14 +113,12 @@ export default function App() {
       </div>
       <br />
       <button onClick={handleStart}>Start Cleaning</button>
-      <button onClick={handleClean}>Clean</button>
-      <canvas
-        ref={canvasRef}
-        height={10000}
-        width={10000}
-        className={"rectangule"}
-      />
-      ;
+      <button onClick={handleClean}>Reset</button>
+      <div>
+        {cleaned && (
+          <h2>Cleaned Spaces: {cleaned} </h2>
+        )}
+      </div>
     </div>
   );
 }

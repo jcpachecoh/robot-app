@@ -1,13 +1,13 @@
 import { createArray } from "./utils";
 
 const configuration = {
-  space: [-100, 100]
+  space: [-1000, 1000]
 };
 class RobotCleaner {
-  constructor({commands, initialPosition, steps}) {
-    this.commands = commands;
+  constructor({numberCommands, initialPosition, commandList}) {
+    this.commands = numberCommands;
     this.currentPosition = initialPosition;
-    this.steps = steps;
+    this.commandList = commandList;
     this.roomMatrix = createArray(configuration.space[1]);
   }
 
@@ -94,7 +94,7 @@ class RobotCleaner {
 
   startCleaning() {
     this.updateMatrix(this.currentPosition)
-    this.steps.forEach(element => {
+    this.commandList.forEach(element => {
       const commands = element && element.commands;
       for (let index = 0; index < commands; index++) {
         if (this.canRobotMove(element.direction)) {
